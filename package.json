@@ -1,0 +1,62 @@
+{
+	"name": "bindom",
+	"version": "0.0.1",
+	"license": "MIT",
+	"author": {
+		"name": "Thorsten Roggendorf",
+		"email": "floss@schrotie.de",
+		"url": "http://schrotie.de"
+	},
+	"description": "micro-library for writing high performance vanilla web components",
+	"homepage": "https://github.com/schrotie/bindom#readme",
+	"bugs": {
+		"url": "https://github.com/shrotie/bindom/issues",
+		"email": "floss@schrotie.de"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/schrotie/bindom"
+	},
+	"files": [
+		"documentation/**",
+		"bindom.mjs",
+		"bindom.min.mjs"
+	],
+	"directories": {
+		"doc": "documentation",
+		"example": "demo",
+		"test": "test"
+	},
+	"keywords": [
+		"browser",
+		"javascript",
+		"library",
+		"web-components"
+	],
+	"browser": "bindom.mjs",
+	"devDependencies": {
+		"chai": "latest",
+		"eslint": "^8.4.1",
+		"eslint-config-google": "^0.7.1",
+		"eslint-plugin-html": "^1.7.0",
+		"jsdoc": "latest",
+		"jsdoc-to-markdown": "^4.0.1",
+		"mocha": "latest",
+		"mocha-headless-chrome": "latest",
+		"rollup": "latest",
+		"serve": "latest",
+		"quary": "latest",
+		"uglify-es": "latest"
+	},
+	"scripts": {
+		"build": "npm run-script build-doc; npm run-script uglify",
+		"build:dbg": "npm run-script build-doc; ./node_modules/.bin/rollup  bindom.mjs > bindom.min.mjs;",
+		"build-doc": "cp bindom.mjs s.js; ./node_modules/.bin/jsdoc2md --separators -f s.js > documentation/api/README.md; rm s.js",
+		"lint": "eslint . --ext js,html --ignore-path .gitignore",
+		"prepare": "npm run build",
+		"start": "${PWD}/node_modules/.bin/serve &",
+		"stop": "ps aux | grep 'bindom/node_modules/.bin/serve' | grep -v grep | awk '{print $2}' | xargs kill",
+		"test": "npm start; sleep 2; ./node_modules/.bin/mocha-headless-chrome -f http://localhost:3000/test/test.html; sleep 5; npm stop",
+		"uglify": "./node_modules/.bin/rollup  bindom.mjs | ./node_modules/uglify-es/bin/uglifyjs -c -m --keep-fnames > bindom.min.mjs; sed -i '1s;^;/* eslint-disable */\\n;' bindom.min.mjs"
+	}
+}
