@@ -1,13 +1,13 @@
 {
 	"name": "bindom",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"license": "MIT",
 	"author": {
 		"name": "Thorsten Roggendorf",
 		"email": "floss@schrotie.de",
 		"url": "http://schrotie.de"
 	},
-	"description": "micro-library for writing high performance vanilla web components",
+	"description": "Tiny, powerful data binding & web application framework",
 	"homepage": "https://github.com/schrotie/bindom#readme",
 	"bugs": {
 		"url": "https://github.com/shrotie/bindom/issues",
