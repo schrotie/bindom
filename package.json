@@ -1,6 +1,6 @@
 {
 	"name": "bindom",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"license": "MIT",
 	"author": {
 		"name": "Thorsten Roggendorf",
@@ -24,7 +24,8 @@
 	],
 	"directories": {
 		"doc": "documentation",
-		"example": "demo",
+		"demo": "demo",
+		"src": "src",
 		"test": "test"
 	},
 	"keywords": [
