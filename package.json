@@ -1,6 +1,6 @@
 {
 	"name": "bindom",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"license": "MIT",
 	"author": {
 		"name": "Thorsten Roggendorf",
@@ -18,7 +18,7 @@
 		"url": "https://github.com/schrotie/bindom"
 	},
 	"files": [
-		"documentation/**",
+		"src/**",
 		"bindom.mjs",
 		"bindom.min.mjs"
 	],
