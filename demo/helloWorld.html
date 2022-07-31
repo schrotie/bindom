@@ -1,0 +1,10 @@
+<!doctype html>
+<html>
+	<body>
+		<span data-bind=greet:§> </span> <span data-bind=whom:§> </span>!
+		<script type=module>
+			import $ from "../bindom.mjs"
+			$(document.body).bind({greet: "Hello", whom: "world"});
+		</script>
+	</body>
+</html>

@@ -87,7 +87,7 @@ function funcAccessor({node, to, key}) {return {
 };}
 
 function nodeAccessor({node, key}) {return {
-	get: () => () => node,
+	get: () => node,
 	set() {throw new Error(`Cannot assign to bound node with key "${key}"`);},
 };}
 

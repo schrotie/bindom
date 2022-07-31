@@ -1,6 +1,6 @@
 {
 	"name": "bindom",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"license": "MIT",
 	"author": {
 		"name": "Thorsten Roggendorf",
@@ -46,8 +46,10 @@
 		"mocha-headless-chrome": "latest",
 		"rollup": "latest",
 		"serve": "latest",
-		"quary": "latest",
 		"uglify-es": "latest"
+	},
+	"dependencies": {
+		"quary": "latest"
 	},
 	"scripts": {
 		"build": "npm run-script build-doc; npm run-script uglify",

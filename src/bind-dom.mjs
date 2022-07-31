@@ -43,6 +43,7 @@ function append($node, template) {
 function ini($node, {Class}) {
 	const object = new Class();
 	const pre = $node.prop('proxy');
+	// TODO: no worky, at least not for bindHost stuff ...
 	if(pre) $node.unbind(pre);
 	iniProxy($node[0], $node.bind(object));
 	$node.emit('bound', {detail: object});
