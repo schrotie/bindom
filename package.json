@@ -1,6 +1,6 @@
 {
 	"name": "bindom",
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"license": "MIT",
 	"author": {
 		"name": "Thorsten Roggendorf",
@@ -59,7 +59,7 @@
 		"prepare": "npm run build",
 		"start": "${PWD}/node_modules/.bin/serve &",
 		"stop": "ps aux | grep 'bindom/node_modules/.bin/serve' | grep -v grep | awk '{print $2}' | xargs kill",
-		"test": "npm start; sleep 2; ./node_modules/.bin/mocha-headless-chrome -f http://localhost:3000/test/test.html; sleep 5; npm stop",
+		"test": "npm start; sleep 2; ./node_modules/.bin/mocha-headless-chrome -f http://localhost:5000/test/test.html; sleep 5; npm stop",
 		"uglify": "./node_modules/.bin/rollup  bindom.mjs | ./node_modules/uglify-es/bin/uglifyjs -c -m --keep-fnames > bindom.min.mjs; sed -i '1s;^;/* eslint-disable */\\n;' bindom.min.mjs"
 	}
 }

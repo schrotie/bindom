@@ -1,4 +1,4 @@
-import $ from '../../node_modules/quary/quary.mjs';
+import $ from 'quary';
 
 import selectBound from '../selectBound.mjs';
 

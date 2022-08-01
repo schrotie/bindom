@@ -1,4 +1,4 @@
-import $, {Quary} from '../node_modules/quary/quary.mjs';
+import $, {Quary} from 'quary';
 
 import parse             from './parse.mjs';
 import boundObject       from './bindObject.mjs';

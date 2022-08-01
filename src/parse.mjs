@@ -1,4 +1,4 @@
-import $ from '../node_modules/quary/quary.mjs';
+import $ from 'quary';
 
 export default function parse(root, nodes, object) {
 	const bound = nodes.map(parseBoundNode(root)).flat();

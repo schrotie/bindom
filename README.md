@@ -8,7 +8,7 @@ Tiny, powerful data binding & web application framework
 	<body>
 		<span data-bind=greet:§> </span> <span data-bind=whom:§> </span>!
 		<script type=module>
-			import $ from "../bindom.mjs"
+			import $ from "../bindom.min.mjs"
 			$(document.body).bind({greet: "Hello", whom: "world"});
 		</script>
 	</body>
@@ -94,7 +94,7 @@ and then call the `bind` method on it. The bind method expects one argument - a
 JavaScript object to which to bind the selected DOM. For example (see Hello
 world! above):
 ```JavaScript
-import $ from "/node_modules/bindom/bindom.mjs"
+import $ from "bindom"
 $(document.body).bind({greet: "Hello", whom: "world"});
 ```
 Bindom will then search the respective DOM for `data-bind` attributes and bind
@@ -104,6 +104,34 @@ attribute.
 Note that the bound object may be an instance of a specific class, designed
 to interact with the specific bound DOM. Only thus you can leverage the full
 power of Bindom.
+
+
+### `import 'bindom'`, Development & Deployment
+
+I hedge a deep and well-fostered hate against having a build step in my
+development cycle and my apps work without one. If you want to import bindom
+you have two options: import the bundled bindom.min.mjs. You may use absolute
+paths to its position in your node\_modules folder and be somewhat fine.
+
+However, if you want to import its unmingled source version from bindom.mjs,
+you will need to tell it where to find Quary, on which it depends. The solution
+to making this work without a build step is import-maps which are supported in
+the major browsers with the exception of IE 12 (aka "Safari").
+
+Put something like this into the head of your HTML:
+```HTML
+<script type="importmap">{"imports": {
+	"bindom": "./node_modules/bindom/bindom.mjs",
+	"quary": "./node_modules/quary/quary.mjs"
+}}</script>
+```
+and you're good to go for development. You can then just `import 'bindom'` in
+your code and develop on your sources, not some weird artifact that resembles
+what you developed after having that artifact and the browser jump throw a
+dozen or so hoops.
+
+For production you absolutely want to have a build step that bundles your app. I
+recommend rollup for this. It's the perfect tool for this task.
 
 ### data-bind
 
