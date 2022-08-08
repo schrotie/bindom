@@ -1,3 +1,7 @@
+0.0.7
+* added bindom.min.mjs to .gitignore
+* include README in package
+* fix package exports for rollup-plugin-node-resolve
 0.0.6
 * moved from absolute path imports to name and import-map
 * documented that

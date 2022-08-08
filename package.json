@@ -1,6 +1,6 @@
 {
 	"name": "bindom",
-	"version": "0.0.6",
+	"version": "0.0.7",
 	"license": "MIT",
 	"author": {
 		"name": "Thorsten Roggendorf",
@@ -20,7 +20,8 @@
 	"files": [
 		"src/**",
 		"bindom.mjs",
-		"bindom.min.mjs"
+		"bindom.min.mjs",
+		"README.md"
 	],
 	"directories": {
 		"doc": "documentation",
@@ -35,6 +36,7 @@
 		"web-components"
 	],
 	"browser": "bindom.mjs",
+	"exports": "./bindom.mjs",
 	"devDependencies": {
 		"chai": "latest",
 		"eslint": "^8.4.1",
