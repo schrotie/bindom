@@ -1,7 +1,5 @@
 import $ from 'quary';
 
-import selectBound from '../selectBound.mjs';
-
 import addNodes    from './addNodes.mjs';
 import removeNodes from './removeNodes.mjs';
 import {scopeIds}  from './scopeId.mjs';
@@ -29,6 +27,7 @@ class MutationEvaluator {
 		delete this.timeout;
 		removeMoved();
 		evaluateMutation(this.nodes, this.handle, this.biound);
+		delete this.nodes;
 	}
 }
 
@@ -52,7 +51,9 @@ function removeMoved() {
 
 function evaluateMutation(nodes, handle, biound) {
 	if(!nodes.length) return;
-	const bound = selectBound($(nodes));
+	const bound = $(nodes)
+		.query('[data-bind]')
+		.concat(nodes.filter(n => n.matches && n.matches('[data-bind]')));
 	if(!bound.length) return;
 	boundScopes(bound, biound).forEach(handle);
 }

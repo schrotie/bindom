@@ -19,12 +19,21 @@ export function addProperty(object, map, pth, entry) {
 export function updateProperty(object, map, pth) {
 	for(const {obj, prop} of path(object, pth)) {
 		const {def} = map[prop];
-		delete obj[prop];
-		if(def.revertProp) obj.defineProperty(prop, def.revertProp);
+		const preValue = revertObj(def, obj, prop);
 		if(!def.length) return delete map[prop];
+		if(!def.revertProp && (preValue !== undefined)) obj[prop] = preValue[0];
 		const {get, set} = accessor(obj, def, pth);
 		Object.defineProperty(obj, prop, {get, set, configurable: true});
 	}
+}
+
+function revertObj(def, obj, prop) {
+	let preValue;
+	try {preValue = Object.prototype.hasOwnProperty.call(obj, prop) ?
+		[obj[prop]] : undefined;} catch(e) {}
+	delete obj[prop];
+	if(def.revertProp) obj.defineProperty(prop, def.revertProp);
+	return preValue;
 }
 
 function accessor(object, def, path) {

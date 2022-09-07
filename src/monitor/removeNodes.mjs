@@ -45,7 +45,8 @@ function rmEntry(object, map, key, rm, path) {
 		def.splice(def.indexOf(def.find(({node}) => node === entry.node)), 1)
 			.forEach(removeEventListener);
 	}
-	if((def.length === 1) || !def.length) updateProperty(object, map, path);
+	if(def.length === 1) convertToSimple(object, map, key, path, def);
+	if(!def.length) updateProperty(object, map, path);
 }
 
 function removeEventListener({
@@ -53,4 +54,11 @@ function removeEventListener({
 }) {
 	if(!addEventListener) return;
 	if(handler) node.off(evt, handler);
+}
+
+function convertToSimple(object, map, key, path, def) {
+	removeEventListener(def[0]);
+	const preValue = object[key][0];
+	updateProperty(object, map, path);
+	object[key] = preValue;
 }

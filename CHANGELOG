@@ -1,3 +1,11 @@
+0.0.8
+Several fixes of things going wrong when deeply nesting arrays of array of stuff
+(loop-dom), having to do with tracking addition and removal of nodes.
+* retain ".proxy" values on <bind-dom> if set before binding
+* revert to previous values when unbinding
+* debounce template insertion
+* correctly unbind parent-binding stuff in mutation observer
+* correctly convert to simple from array when removing nodes
 0.0.7
 * added bindom.min.mjs to .gitignore
 * include README in package

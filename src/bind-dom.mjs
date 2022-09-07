@@ -8,7 +8,7 @@ export async function dataClassAttributeChangedCallback(
 	const opt = await getClass(newValue);
 	const $node = $(this); // eslint-disable-line
 	iniDom($node, oldValue, newValue, opt);
-	ini($node, opt);
+	ini($node, opt, oldValue);
 }
 
 function iniDom($node, oldClass, newClass, {bindHost, style, template}) {
@@ -40,12 +40,13 @@ function append($node, template) {
 	$node.append({condition: true,  id: 'dom-bind', template});
 }
 
-function ini($node, {Class}) {
+function ini($node, {Class}, oldClass) {
 	const object = new Class();
 	const pre = $node.prop('proxy');
 	// TODO: no worky, at least not for bindHost stuff ...
 	if(pre) $node.unbind(pre);
 	iniProxy($node[0], $node.bind(object));
+	if(pre && (oldClass === null)) $node[0].proxy = pre;
 	$node.emit('bound', {detail: object});
 }
 

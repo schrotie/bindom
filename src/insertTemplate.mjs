@@ -7,6 +7,7 @@ let id = 0;
 const templates       = new WeakMap();
 const previousClass   = new WeakMap();
 const previousElement = new WeakMap();
+const pending         = new WeakMap();
 
 export function insertAndBindTemplate(template, opt = {}) {
 	return withOutBinding(true, template, opt);
@@ -21,7 +22,9 @@ async function withOutBinding(withBinding, template, opt) {
 	if(!parent) return;
 	const insertMethod = determineInsertMethod(template);
 	const reset = id => parent[insertMethod]({id, template, array: []});
-	const options = await getInsertOptions(withBinding, template, opt, reset);
+	const options = await debounceGetInsertOptions(
+		withBinding, template, opt, reset,
+	);
 	return parent[insertMethod](options);
 }
 
@@ -48,6 +51,16 @@ function determineInsertMethod(template) {
 	return template.dataset.insert ?
 		template.dataset.insert :
 		(template.dataset.parent ? 'append' : 'before');
+}
+
+function debounceGetInsertOptions(withBinding, template, opt, reset) {
+	return new Promise(async resolve => {
+		pending.set(template, resolve);
+		const options = await getInsertOptions(withBinding, template, opt, reset);
+		if(pending.get(template) !== resolve) return;
+		pending.delete(template);
+		resolve(options);
+	});
 }
 
 async function getInsertOptions(withBinding, template, opt, reset) {
