@@ -18,15 +18,14 @@ describe('array proxy', () => {
 
 
 	it('binds initial text', () => {
-		proxy.foo[0].should.equal(' ');
-		proxy.foo[1].should.equal(' ');
+		proxy.foo.should.equal(' ');
 	});
 
 
 	it('binds changed text', () => {
 		$one.text('one');
 		$two.text('two');
-		proxy.foo.should.deep.equal(['one', 'two']);
+		proxy.foo.should.equal('one');
 	});
 
 	it('changes bound text', () => {

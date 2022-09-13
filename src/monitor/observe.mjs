@@ -26,13 +26,15 @@ class MutationEvaluator {
 	flush() {
 		delete this.timeout;
 		removeMoved();
-		evaluateMutation(this.nodes, this.handle, this.biound);
+		evaluateMutation(this.nodes.filter(unique), this.handle, this.biound);
 		delete this.nodes;
 	}
 }
 
 const addition = new MutationEvaluator('addedNodes',   addNodes,    'bind');
 const removal  = new MutationEvaluator('removedNodes', removeNodes, 'bound');
+
+function unique(el, idx, arr) {return arr.indexOf(el) === idx;}
 
 export function observe(mutations) {
 	addition.process(mutations);
@@ -55,7 +57,7 @@ function evaluateMutation(nodes, handle, biound) {
 		.query('[data-bind]')
 		.concat(nodes.filter(n => n.matches && n.matches('[data-bind]')));
 	if(!bound.length) return;
-	boundScopes(bound, biound).forEach(handle);
+	boundScopes(bound.filter(unique), biound).forEach(handle);
 }
 
 export function boundScopes(bound, biound) {

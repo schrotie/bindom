@@ -42,23 +42,21 @@ function removeNestedEntries(object, map, key, value, path) {
 function rmEntry(object, map, key, rm, path) {
 	const {def} = map[key];
 	for(const entry of rm) {
-		def.splice(def.indexOf(def.find(({node}) => node === entry.node)), 1)
-			.forEach(removeEventListener);
+		const idx = def.indexOf(def.find(({node}) => node[0] === entry.node[0]));
+		def.splice(idx, 1).forEach(removeEventListener);
 	}
 	if(def.length === 1) convertToSimple(object, map, key, path, def);
 	if(!def.length) updateProperty(object, map, path);
 }
 
-function removeEventListener({
-	addEventListener, node, eventListener: {evt, handler} = {},
-}) {
-	if(!addEventListener) return;
+function removeEventListener({node, eventListener: {evt, handler} = {}}) {
 	if(handler) node.off(evt, handler);
 }
 
 function convertToSimple(object, map, key, path, def) {
 	removeEventListener(def[0]);
-	const preValue = object[key][0];
+	const hasPreValue = key in object;
+	const preValue = object[key];
 	updateProperty(object, map, path);
-	object[key] = preValue;
+	if(hasPreValue) object[key] = preValue;
 }

@@ -50,7 +50,7 @@ describe('add nodes', () => {
 		bound.foo = 'foo';
 		bound.foo.should.equal('foo');
 		await instantiate();
-		bound.foo.should.deep.equal(['foo', 'foo']);
+		bound.foo.should.equal('foo');
 		$test.query('[data-bind^="foo"]')[0].innerHTML.should.equal('foo');
 		$test.query('[data-bind^="foo"]')[1].innerHTML.should.equal('foo');
 		bound.foo = 'foo';

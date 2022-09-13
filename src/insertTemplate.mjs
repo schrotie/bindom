@@ -86,8 +86,9 @@ async function iniTemplate(withBinding, tmplElement) {
 		return templates.get(tmplElement);
 	}
 	const opt = {id: `sq-instantiate-template-${id++}`};
+	await updateTemplate(tmplElement, opt);
 	templates.set(tmplElement, opt);
-	return await updateTemplate(tmplElement, opt);
+	return opt;
 }
 
 async function updateTemplate(tmplElement, opt, changed) {

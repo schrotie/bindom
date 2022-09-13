@@ -42,9 +42,10 @@ function iniObserver() {
 }
 
 export function unbind(bound, what) {
-	const binding = bound.filter(node => node.dataset && node.dataset.boundId);
+	const binding = bound.query('[data-bind]')
+		.concat(bound.filter(n => n.matches && n.matches('[data-bind]')));
 	if(!binding.length) return;
-	const scopes = boundScopes(bound, 'bound');
+	const scopes = boundScopes(binding, 'bound');
 	if(!what) scopes.forEach(rmNodes);
 	else scopes.filter(filter(what)).forEach(rmNodes);
 }

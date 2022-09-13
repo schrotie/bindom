@@ -28,6 +28,7 @@ describe('remove nodes', () => {
 		return $test.when('removedBound');
 	};
 
+	afterEach(() => removed($foo1.concat($foo2, $barFooFoo, $barFooBar, $baz)));
 
 	it('removes shallow binding', async() => {
 		proxy.baz.should.equal('baz');
@@ -38,13 +39,13 @@ describe('remove nodes', () => {
 	});
 
 	it('converts array to simple binding', async() => {
-		proxy.foo.should.deep.equal(['foo1', 'foo2']);
+		proxy.foo.should.equal('foo1');
 		await removed($foo1);
 		proxy.foo.should.equal('foo1');
 		proxy.foo = 'foo';
 		proxy.foo.should.equal('foo');
-		$foo1.text().should.equal('foo');
-		$foo2.text().should.equal('foo2');
+		$foo1.text().should.equal('foo1');
+		$foo2.text().should.equal('foo');
 	});
 
 	it('removes deep binding', async() => {

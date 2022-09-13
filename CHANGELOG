@@ -1,3 +1,7 @@
+0.0.9
+More fixes of things going wrong when deeply nesting arrays of array of stuff
+(loop-dom), having to do with tracking addition and removal of nodes.
+* BREAKING array proxy returns first element instead of array
 0.0.8
 Several fixes of things going wrong when deeply nesting arrays of array of stuff
 (loop-dom), having to do with tracking addition and removal of nodes.

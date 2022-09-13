@@ -134,7 +134,7 @@ function propagateToDom(object, def, accessor) {
 function arrayAccessor(object, def) {
 	def = def.map(d => simpleAccessor(object, d));
 	return {
-		get: () => def.map(({get}) => get()),
+		get: () => def[0].get(), // .map(({get}) => get()),
 		set: v  => def.map(({set}) => set(v)),
 	};
 }
