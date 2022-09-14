@@ -199,8 +199,8 @@ you call the property getter `object.objPropA`. It will then call
 
 You can also always do `object.objPropA = 'x'`. This will invoke
 `node.setAttribute('data-dom-attribute', 'x')`. All this also works if you bind
-the same object property to several nodes, but the getter will return an array,
-then.
+the same object property to several nodes. In this case the getter will return
+the value of the "first" bound element.
 
 This works exactly the same with property and text bindings.
 
@@ -216,9 +216,9 @@ Methods can only be called. `object.objMethod()` will call the node's
 
 You can assign to events, but you should assign DOM events to them, e.g.
 `object.objEvent = new CustomEvent('foo', {detail: 'bar'})`. This will emit the
-respective node. Since Bindom uses Quary's emit method for this, you may assign
-anything, that Quary's emit method supports, see Quary's documentation for
-details.
+event on the bound node. Since Bindom uses Quary's emit method for this, you may
+assign anything, that Quary's emit method supports, see Quary's documentation
+for details.
 
 #### Change Notifications
 Bindom can also track changes and events in the DOM for you. It will do that,
@@ -320,7 +320,7 @@ The order of events is like this:
 Note that 1. *may* also come *after* 2.. Bindom will wait three seconds for a
 class it should instantiate to be declared and will then raise an exception, if
 the class was still not declared. That should be ample time because usually
-you *should* bundle your production code. For reall dynamic loading of modules
+you *should* bundle your production code. For real dynamic loading of modules
 you *should* implement a component, that does what you need and only sets
 `data-class` once you're good to go.
 
@@ -353,7 +353,7 @@ only ever added once to the page's styles.
 Bindom will also add the name of the bound class to the `class` attribute or the
 respective `<bind-dom>` node. You could also use `[data-class=MyDomHandler]` as
 a CSS selector to scope the CSS to your module, but `.MyDomHandler` is a much
-niver selector.
+nicer selector.
 
 #### bindHost
 
@@ -374,7 +374,7 @@ parent bindings, these will be left alown and still work.
 #### Dynamic `data-class`
 You *may* change the `data-class` attribute of a `<bind-dom>` element anytime.
 `<bind-dom>` will then clean up the old bound stuff (remove the template,
-unbind ...) and incoke the new stuff.
+unbind ...) and invoke the new stuff.
 
 ### `<template is=if-dom>`
 
@@ -442,7 +442,7 @@ Redux is React-agnostic, lean, powerful and just great for writing complex
 apps.
 
 However, most apps are much simpler than the complexity level calling for
-Redux. and if you write something simple, you should use something simple for
+Redux. And if you write something simple, you should use something simple for
 state management. Since I didn't find something that satisfied my likings, I
 implemented [xt8](https://github.com/schrotie/xt8).
 

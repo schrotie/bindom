@@ -127,7 +127,7 @@ function reOrNewBind(Class, update, $dom, arrayElement, idx) {
 	el.proxy = $($dom).bind(el);
 	$dom.forEach(node => iniProxy(node, el.proxy));
 	if(!correctClass) $dom.forEach(node => node.proxy = arrayElement);
-	$dom.addClass(Class.name);
+	if(Class.name !== 'Object') $dom.addClass(Class.name);
 	if(update) update($dom, arrayElement, idx);
 	$dom.emit('bound', {detail: arrayElement});
 }
