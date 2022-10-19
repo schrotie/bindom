@@ -123,7 +123,7 @@ function doReOrNewBind(updateStrategy, [dom], Class) {
 function reOrNewBind(Class, update, $dom, arrayElement, idx) {
 	const correctClass = arrayElement.constructor.name === Class.name;
 	const el = correctClass ? arrayElement : new Class();
-	$dom.unbind();
+	$dom.unbind($dom.prop('proxy'));
 	el.proxy = $($dom).bind(el);
 	$dom.forEach(node => iniProxy(node, el.proxy));
 	if(!correctClass) $dom.forEach(node => node.proxy = arrayElement);

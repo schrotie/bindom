@@ -66,8 +66,10 @@ function eventAccessor(object, def) {
 
 function registerListener(object, def, evt, value) {
 	const set = getSetter(object, def.key.at(-1), def);
-	if(!set) return;
-	const handler = propagateToBound(object, def.key, set, value);
+	let handler;
+	if(set) handler = propagateToBound(object, def.key, set, value);
+	else if(def.hostBinding) handler = propagateToProxy(object, def.key, value);
+	else return;
 	def.eventListener = {evt, handler};
 	def.node.on(evt, handler);
 }
@@ -89,6 +91,14 @@ function propagateToBound(object, key, set, value) {return function(evt) {
 	}
 };}
 
+function propagateToProxy(object, key, value) {
+	return function(evt) {
+		for(const {obj, prop} of path(object, key)) {
+			if(obj[prop] !== value(evt)) obj[prop] = value(evt);
+		}
+	};
+}
+
 function funcAccessor({node, to, key}) {return {
 	get: () => (...arg) => node.call(to.key, ...arg),
 	set() {throw new Error(
@@ -105,9 +115,29 @@ function defaultAccessor(object, def) {
 		get: () => def.node[def.to.type](def.to.key),
 		set:  v => def.node[def.to.type](def.to.key, v),
 	};
-	registerListener(object, def, def.to.on, () => accessor.get());
-	propagateToDom(object, def, accessor);
+	registerListener( object, def, def.to.on, () => accessor.get());
+	if(def.to.type === 'attr') propagatePreAttribute(object, def);
+	if(def.to.type === 'prop') propagatePreProperty( object, def);
+	propagateToDom(   object, def, accessor);
 	return accessor;
+}
+
+function propagatePreAttribute(object, def) {
+	if(
+		!def.hostBinding ||
+		!def.node[0].hasAttribute(def.to.key) ||
+		!def.eventListener
+	) return;
+	setTimeout(() => def.eventListener.handler(def.node.attr(def.to.key)));
+}
+
+function propagatePreProperty(object, def) {
+	if(
+		!def.hostBinding ||
+		!Object.prototype.hasOwnProperty.call(def.node[0], def.to.key) ||
+		!def.eventListener
+	) return;
+	setTimeout(() => def.eventListener.handler(def.node[0][def.to.key]));
 }
 
 function textAccessor(object, def) {

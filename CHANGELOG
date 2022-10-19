@@ -1,3 +1,7 @@
+0.0.11
+* bugfix: unbinding template did also undbind nested bind-doms
+* now propagating bound attributes and properties of host nodes to bound object during binding
+* force executing host-bindings even if the bound object hast no setter -> propagate to bound DOM
 0.0.10
 * don't auto-add className "Object"
 * minor doc fixes

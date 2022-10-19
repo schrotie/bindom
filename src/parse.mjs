@@ -18,13 +18,13 @@ function parseBoundNode(root) {return function(bound) {
 
 function sq(node) {return node.shadowRoot ? $(node, ':host') : $(node);}
 
-function parseSingleBinding(root, node, binding) {
+function parseSingleBinding(isRoot, node, binding) {
 	const splitChar = /÷/.test(binding) ? '÷' : ':';
 	const bind = binding.split(splitChar);
 	validateSingleBinding(bind);
-	const key = parseKey(root, node, bind[0]);
+	const key = parseKey(isRoot, node, bind[0]);
 	if(!key) return;
-	return {node, key, to: parseDomExp(bind[1])};
+	return bindingDefinition(node, bind, key);
 }
 
 function validateSingleBinding(bind) {
@@ -42,6 +42,12 @@ function parseKey(isRoot, [node], key) {
 		}
 		else return key.split('.');
 	}
+}
+
+function bindingDefinition(node, bind, key) {
+	const def = {node, key, to: parseDomExp(bind[1])};
+	if(!/^\^/.test(bind[0]) && node.attr('data-class')) def.hostBinding = true;
+	return def;
 }
 
 function parseDomExp(value) {
