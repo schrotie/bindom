@@ -46,7 +46,11 @@ function parseKey(isRoot, [node], key) {
 
 function bindingDefinition(node, bind, key) {
 	const def = {node, key, to: parseDomExp(bind[1])};
-	if(!/^\^/.test(bind[0]) && node.attr('data-class')) def.hostBinding = true;
+	if(
+		!/^\^/.test(bind[0]) &&
+		node.attr('data-class') &&
+		{attr: 1, prop: 1, text: 1}[def.to.type]
+	) def.hostBinding = true;
 	return def;
 }
 
