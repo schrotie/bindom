@@ -72,10 +72,11 @@ cd bindom
 npm install
 npm start
 ```
-You can then see the demo at
-[http://localhost:5000/demo/app/](http://localhost:5000/demo/app/). Check out
-the source code and see in your browser, what it does. I guess, that's the
-quickest way to learn Bindom for most of you.
+This should open the demo in your browser. Note this will only work in Chrome
+as of this writing. Other browsers need importmaps support as described below!
+Check out the source code in demo/app/ and see in your browser, what it does.
+Change it! The browser should automatically reload.
+I guess, that's the quickest way to learn Bindom for most of you.
 
 You may come back to the documentation in order to understand, how the features
 work, what's actually going on there.
