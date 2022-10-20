@@ -38,6 +38,7 @@
 	"browser": "bindom.mjs",
 	"exports": "./bindom.mjs",
 	"devDependencies": {
+		"browser-sync": "latest",
 		"chai": "latest",
 		"eslint": "^8.4.1",
 		"eslint-config-google": "^0.7.1",
@@ -47,21 +48,20 @@
 		"mocha": "latest",
 		"mocha-headless-chrome": "latest",
 		"rollup": "latest",
-		"serve": "latest",
-		"uglify-es": "latest"
+		"rollup-plugin-terser": "latest",
+		"@rollup/plugin-node-resolve": "latest"
 	},
 	"dependencies": {
 		"quary": "latest"
 	},
 	"scripts": {
-		"build": "npm run-script build-doc; npm run-script uglify",
-		"build:dbg": "npm run-script build-doc; ./node_modules/.bin/rollup  bindom.mjs > bindom.min.mjs;",
+		"build": "npm run build-doc; ./node_modules/.bin/rollup --config rollup.config.js; sed -i '1s;^;/* eslint-disable */\\n;' bindom.min.mjs",
+		"build:dbg": "./node_modules/.bin/rollup --config rollup.config.dbg.js",
 		"build-doc": "cp bindom.mjs s.js; ./node_modules/.bin/jsdoc2md --separators -f s.js > documentation/api/README.md; rm s.js",
 		"lint": "eslint . --ext js,html --ignore-path .gitignore",
 		"prepare": "npm run build",
-		"start": "${PWD}/node_modules/.bin/serve &",
-		"stop": "ps aux | grep 'bindom/node_modules/.bin/serve' | grep -v grep | awk '{print $2}' | xargs kill",
-		"test": "npm start; sleep 2; ./node_modules/.bin/mocha-headless-chrome -f http://localhost:5000/test/test.html; sleep 5; npm stop",
-		"uglify": "./node_modules/.bin/rollup  bindom.mjs | ./node_modules/uglify-es/bin/uglifyjs -c -m --keep-fnames > bindom.min.mjs; sed -i '1s;^;/* eslint-disable */\\n;' bindom.min.mjs"
+		"start": "${PWD}/node_modules/.bin/browser-sync start --server --directory --files \"src/**/*.mjs\"&",
+		"stop": "ps aux | grep 'bindom/node_modules/.bin/browser-sync' | grep -v grep | awk '{print $2}' | xargs kill",
+		"test": "npm start; sleep 2; ./node_modules/.bin/mocha-headless-chrome -f http://localhost:5000/test/test.html; sleep 5; npm stop"
 	}
 }
