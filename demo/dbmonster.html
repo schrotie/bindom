@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script type='module'>
+import $, {addClass} from '../bindom.min.mjs';
+
+addClass(class Monster {
+	constructor() {
+		this.data = [];
+		for(let i = 1; i < 51; i++) {
+			this.data.push([`cluster${i}`,       {}, {}, {}, {}, {}, {}]);
+			this.data.push([`cluster${i} slave`, {}, {}, {}, {}, {}, {}]);
+		}
+	}
+	set bound(e) {this._update();}
+	_update() {
+		const entropy = this.entropy;
+		for(let row of this.data) {
+			if(Math.random() < entropy) row[1].v = Math.round(Math.random() * 10);
+			for(var i = 2; i < row.length; i++) {
+				if(Math.random() > entropy) continue;
+				const v = (Math.random() * 15).toFixed(2);
+				row[i].v = v;
+				row[i].w = Math.random() < 0.5;
+				const q = Math.random();
+				if(     q >= 0.2) row[i].q = 'SELECT blah FROM something';
+				else if(q <  0.1) row[i].q = 'vacuum';
+				else              row[i].q = '<IDLE> in transaction';
+			}
+		}
+		this.update = true;
+		setTimeout(() => this._update());
+	}
+	}, {template:/* html */`
+<sq-slider entropy="0.5" data-bind=entropy:@entropy></sq-slider>
+<bind-dom data-class=Table data-bind=^update:.update;^data:.data></bind-dom>
+<bind-dom data-class=Stats data-bind=^update:.update></dom-bind>
+`, style: /* css */`
+	.Monster {
+		display: block;
+		width: 100%;
+		font-family: sans-serif;
+	}
+`, bindHost: 'bound:!bound'});
+
+
+const sliderTemplate = /* html */`
+<style>
+	:host {
+		width: 100%;
+		display: flex;
+		justify-content: stretch;
+		margin-bottom: 0.5rem;
+	}
+	div {
+		font-weight: bold;
+		display: inline-block;
+		flex: 0 0;
+		margin-right: 1rem;
+	}
+	label {display: block;}
+	input {flex: 1 1 auto;}
+</style>
+<div><label>mutations:</label><span> </span></div>
+<input type="range" min="0" max="100" value="50" step="0.1"></input>
+`;
+
+customElements.define('sq-slider', class extends HTMLElement {
+	constructor() {super();}
+	connectedCallback() {
+		$(this).shadow(sliderTemplate);
+		$(this, 'input').on('input', this._update.bind(this));
+		this._update();
+	}
+	_update() {
+		const value = $(this, 'input').prop('value');
+		$(this, 'span').text(`${value}%`);
+		$(this, ':host').attr('entropy', Number(value) / 100);
+	}
+});
+
+// Note that the table makes little use of bind-doms data bindings. It mostly
+// uses Quary for initialization and then directly accesses nodeValues directly.
+// This demonstrates how you can access low level APIs with Bindom where needed
+// and achieves outstanding performance in this case.
+const  rowTemplate = /* html */`<tr>\
+<td> </td>\
+<td><span> </span></td>\
+<td> <div> </div></td>\
+<td> <div> </div></td>\
+<td> <div> </div></td>\
+<td> <div> </div></td>\
+<td> <div> </div></td>\
+</tr>`;
+
+addClass(class Table {
+	set bound(e) {
+		this.table.append({
+			array   : this.data,
+			template: rowTemplate,
+			update  : (row, data) => row.query('td:first-child').text(data[0]),
+		});
+		this._iniAccessors();
+	}
+	_iniAccessors() {
+		const row = this.table.query('tr');
+		const data = 'td + td + td';
+		this._classed   = row.map(tr => $(tr, 'span')[0].childNodes[0]);
+		this._class     = row.map(tr => $(tr, 'span')[0].classList);
+		this._dataCell  = row.map(tr => $(tr, data).map(td => td.childNodes[0]));
+		this._dataPopup = row.map(tr => $(tr, 'div').map(div=>div.childNodes[0]));
+	}
+	set update(e) {
+		for(let i = 0; i < this.data.length; i++) {
+			this._classed[i].nodeValue = this.data[i][1].v;
+			this._class  [i].toggle('warn', this.data[i][1].v === 10);
+			for(let j = 2; j < this.data[i].length; j++) {
+				this._dataCell [i][j - 2].nodeValue = this.data[i][j].v;
+				this._dataPopup[i][j - 2].nodeValue = this.data[i][j].q;
+			}
+		}
+	}
+}, {template:  /* html */`<table data-bind=table:*></table>`, style: /* css */`
+	table {
+		width: 100%;
+		border-collapse: collapse;
+		border-spacing: 0;
+		table-layout: fixed;
+		font-size: 75%;
+	}
+	tr {
+	}
+	tr:nth-child(odd) > td {background: #f9f9f9;}
+	td {
+		border-top: 1px solid #ddd;
+		line-height: 1.42857143;
+		padding: 8px;
+		vertical-align: top;
+		position: relative;
+	}
+	td > div {
+		display: none;
+	}
+	td:hover > div {
+		display: block;
+		left: -100%;
+		width: 100%;
+		margin-left: -10px;
+		background-color: #fff;
+		background-clip: padding-box;
+		border: 1px solid rgba(0,0,0,.2);
+		border-radius: 6px;
+		box-shadow: 0 5px 10px rgba(0,0,0,.2);
+		max-width: 276px;
+		padding: 1px;
+		position: absolute;
+		text-align: left;
+		top: 0;
+		white-space: normal;
+		z-index: 1010;
+		padding: 9px 14px;
+	}
+	.Table div:after {
+		content: "";
+		top: calc(50% - 5px);
+		right: -7px;
+		width: 10px;
+		height: 10px;
+		position: absolute;
+		background: white;
+		transform: rotate(45deg);
+		border: 1px solid rgba(0, 0, 0, 0.2);
+		border-bottom: 0 none transparent;
+		border-left: 0 none transparent;
+	}
+	.Table span {
+		background: #5cb85c;
+		border-radius: .25em;
+		color: #fff;
+		font-weight: 700;
+		line-height: 1;
+		padding: .2em .6em .3em;
+		text-align: center;
+		vertical-align: baseline;
+	}
+	.Table span.warn {background: #f0ad4e;}
+`, bindHost: 'update:.update;data:.data;bound:!bound'});
+
+addClass(class Stats {
+	constructor() {this._samples = 0;}
+	set update(e) {
+		const second = Math.floor((new Date()).getTime() / 1000);
+		if(this._previousSecond && (second !== this._previousSecond)) {
+			this.fps = this._samples;
+			this.mem = this._memory;
+			this._samples = 0;
+		}
+		this._previousSecond = second;
+		this._samples++;
+	}
+	get _memory() {
+		const p = performance;
+		if(!p.memory) return 'n/a';
+		const bytes = p.memory.usedJSHeapSize;
+		if (bytes == 0) return 'n/a';
+		const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+		const nFractDigit = 2;
+		const precision   = Math.pow(10, nFractDigit);
+		const i           = Math.floor(Math.log(bytes) / Math.log(1024));
+		return Math.round(
+			bytes*precision / Math.pow(1024, i)
+		) / precision + ' ' + sizes[i];
+	}
+}, {bindHost: 'update:.update', template: /* html */`
+<div><label>FPS:</label><span data-bind=fps:§> </span></div>
+<div><label>Mem:</label><span data-bind=mem:§> </span></div>
+`, style: /* css */`
+	.Stats {
+		display: block;
+		position: fixed;
+		right: 0;
+		bottom: 0;
+		background: black;
+		color: #00ff00;
+		padding: 0.5rem;
+		font-family: monospace;
+	}
+	.Stats div {display: flex;}
+	.Stats label {
+		display: inline-block;
+		width: 3rem;
+	}
+	.Stats span {
+		text-align: right;
+		flex: 1 1 auto;
+	}
+`});
+		</script>
+	</head>
+	<body><bind-dom data-class=Monster></bind-dom></body>
+</html>
