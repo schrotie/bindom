@@ -1,5 +1,6 @@
 # 0.0.13
 * bugfix: correctly bind bind-dom as top-level node in template
+* added db-monster rendering performance demo
 * CHANGELOG -> CHANGELOG.md
 * adapted demo documentation in README
 * fixed & improved loop demo
