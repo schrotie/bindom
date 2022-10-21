@@ -68,6 +68,10 @@ addClass(class BindingTypes {
 	set jump(j) {
 		if(this.a[0].contains(this.c[0])) this.b[0].appendChild(this.c[0]);
 		else                              this.a[0].appendChild(this.c[0]);
+		// Note: the bound nodes are Quary-Arrays. Thus the above could als be
+		// written like this (yes, the if-condition is not more helpful ...):
+		// if(this.a.call('contains', this.c[0])[0]) this.b.append(this.c);
+		// else                                      this.a.append(this.c);
 	}
 
 	set inputText(t) {this.outputText = t;}
