@@ -54,12 +54,12 @@
 		"quary": "latest"
 	},
 	"scripts": {
-		"build": "npm run build-doc; ./node_modules/.bin/rollup --config rollup.config.js; sed -i '1s;^;/* eslint-disable */\\n;' bindom.min.mjs",
-		"build:dbg": "./node_modules/.bin/rollup --config rollup.config.dbg.js",
-		"build-doc": "cp bindom.mjs s.js; ./node_modules/.bin/jsdoc2md --separators -f s.js > documentation/api/README.md; rm s.js",
+		"build": "npm run build:doc; rollup --config rollup.config.js",
+		"build:dbg": "rollup --config rollup.config.dbg.js",
+		"build:doc": "cp bindom.mjs s.js; jsdoc2md --separators -f s.js > documentation/api/README.md; rm s.js",
 		"lint": "eslint . --ext js,html --ignore-path .gitignore",
 		"prepare": "npm run build",
-		"start": "${PWD}/node_modules/.bin/browser-sync start --server --index demo/app/index.html --files \"demo/app/**\"",
+		"start": "browser-sync start --server --index demo/app/index.html --files \"demo/app/**\"",
 		"stop": "ps aux | grep 'bindom/node_modules/.bin/browser-sync' | grep -v grep | awk '{print $2}' | xargs kill",
 		"test": "node test.js"
 	}
