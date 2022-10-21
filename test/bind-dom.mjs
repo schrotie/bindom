@@ -101,6 +101,20 @@ describe('bind-dom', () => {
 		tC.should.equal('[test]');
 	});
 
+	it('updates nested binding in if', async() => {
+		let tG = false;
+		addClass(class testG {set testG(t) {tG = t;}});
+		document.getElementById('test').innerHTML = /* html */`
+			<div><template is=if-dom data-bind=render:.if>
+				<bind-dom data-class=testG data-bind=^test:.test;testG:.test>
+				</bind-dom>
+			</template></div>
+		`;
+		$(document, '#test > div').bind({render: true, test: '[test]'});
+		await (new Promise(resolve => setTimeout(resolve)));
+		tG.should.equal('[test]');
+	});
+
 	it('updates nested loop in if', async() => {
 		document.getElementById('test').innerHTML = /* html */`
 			<bind-dom data-class=testA>
