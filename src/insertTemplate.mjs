@@ -1,7 +1,7 @@
 import {getClass}  from './classRegistry.mjs';
 import {addStyle}  from './addStyle.mjs';
 
-import $ from './bind.mjs';
+import $, {bind} from './bind.mjs';
 
 let id = 0;
 const templates       = new WeakMap();
@@ -66,7 +66,7 @@ function debounceGetInsertOptions(withBinding, template, opt, reset) {
 async function getInsertOptions(withBinding, template, opt, reset) {
 	const {id, Class} = await getTemplate(withBinding, template, reset);
 	const options = {id, template, ...opt, done: done(template, opt)};
-	if(withBinding) options.update = bind(Object.assign(opt, {Class}));
+	if(withBinding) options.update = executeBind(Object.assign(opt, {Class}));
 	if(withBinding && !opt.array) options.array = [new Class()];
 	return options;
 }
@@ -101,7 +101,7 @@ async function updateTemplate(tmplElement, opt, changed) {
 	return opt;
 }
 
-function bind({Class, update, updateStrategy}) {
+function executeBind({Class, update, updateStrategy}) {
 	return function($dom, arrayElement, idx) {
 		if(doReOrNewBind(updateStrategy, $dom, Class)) {
 			reOrNewBind(Class, update, $dom, arrayElement, idx);
@@ -124,8 +124,8 @@ function reOrNewBind(Class, update, $dom, arrayElement, idx) {
 	const correctClass = arrayElement.constructor.name === Class.name;
 	const el = correctClass ? arrayElement : new Class();
 	$dom.unbind($dom.prop('proxy'));
-	el.proxy = $($dom).bind(el);
-	$dom.forEach(node => iniProxy(node, el.proxy));
+	const proxy = bind(el, $($dom), {noRoot: true});
+	$dom.forEach(node => iniProxy(node, proxy));
 	if(!correctClass) $dom.forEach(node => node.proxy = arrayElement);
 	if(Class.name !== 'Object') $dom.addClass(Class.name);
 	if(update) update($dom, arrayElement, idx);

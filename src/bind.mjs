@@ -11,9 +11,9 @@ Quary.prototype.unbind = function(what) {return unbind(this, what);};
 
 export default $;
 
-function bind(object, nodes) {
+export function bind(object, nodes, options) {
 	const bound = selectBound(nodes);
-	const map = parse(nodes, bound, object);
+	const map = parse(nodes, bound, object, options);
 	monitor(object, map, bound, nodes);
 	return boundObject(object, map);
 }

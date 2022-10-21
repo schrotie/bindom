@@ -1,18 +1,20 @@
 import $ from 'quary';
 
-export default function parse(root, nodes, object) {
-	const bound = nodes.map(parseBoundNode(root)).flat();
+export default function parse(root, nodes, object, options) {
+	const bound = nodes.map(parseBoundNode(root, options)).flat();
 	return assemble(object, bound);
 }
 
 
-function parseBoundNode(root) {return function(bound) {
+function parseBoundNode(root, {noRoot} = {}) {return function(bound) {
+	const parser = noRoot ? (b => parseSingleBinding(false, sq(bound), b)) :
+		(b => parseSingleBinding(root.includes(bound), sq(bound), b));
 	return bound.dataset.bind
 		.replace(/\s+/g, ';')
 		.replace(/(?:^;)|(?:;$)/g, '')
 		.split(';')
 		.filter(b => b)
-		.map(b => parseSingleBinding(root.includes(bound), sq(bound), b))
+		.map(parser)
 		.filter(b => b);
 };}
 

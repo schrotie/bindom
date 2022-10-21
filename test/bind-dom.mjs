@@ -85,8 +85,6 @@ describe('bind-dom', () => {
 		tC.should.equal('[test2]');
 	});
 
-	// TODO: the binder does not evaluate the parent binding in this case, but
-	// binds the inner bind-dom to [{testB: '[test]'}] - FIXME
 	it('updates nested binding in loop', async() => {
 		let tC = false;
 		addClass(class testD {set testC(t) {tC = t;}});
