@@ -110,16 +110,31 @@ function nodeAccessor({node, key}) {return {
 	set() {throw new Error(`Cannot assign to bound node with key "${key}"`);},
 };}
 
+
 function defaultAccessor(object, def) {
 	const accessor = {
 		get: () => def.node[def.to.type](def.to.key),
 		set:  v => def.node[def.to.type](def.to.key, v),
 	};
-	registerListener( object, def, def.to.on, () => accessor.get());
-	if(def.to.type === 'attr') propagatePreAttribute(object, def);
-	if(def.to.type === 'prop') propagatePreProperty( object, def);
-	propagateToDom(   object, def, accessor);
+	defaultPropagtation(object, def, accessor);
 	return accessor;
+}
+
+function defaultPropagtation(object, def, accessor) {
+	const hadProp = (def.to.type === 'prop') &&
+		Object.prototype.hasOwnProperty.call(def.node[0], def.to.key);
+	registerListener( object, def, def.to.on, () => accessor.get());
+	if(!hasPath(object, def)) {
+		if(def.to.type === 'attr') propagatePreAttribute(object, def);
+		if(def.to.type === 'prop') propagatePreProperty( object, def, hadProp);
+	}
+	propagateToDom(   object, def, accessor);
+}
+
+function hasPath(object, {key}) {
+	for(const {obj, prop} of path(object, key)) {
+		return Object.prototype.hasOwnProperty.call(obj, prop);
+	}
 }
 
 function propagatePreAttribute(object, def) {
@@ -131,12 +146,8 @@ function propagatePreAttribute(object, def) {
 	setTimeout(() => def.eventListener.handler(def.node.attr(def.to.key)));
 }
 
-function propagatePreProperty(object, def) {
-	if(
-		!def.hostBinding ||
-		!Object.prototype.hasOwnProperty.call(def.node[0], def.to.key) ||
-		!def.eventListener
-	) return;
+function propagatePreProperty(object, def, hadProp) {
+	if(!def.hostBinding || !hadProp || !def.eventListener) return;
 	setTimeout(() => def.eventListener.handler(def.node[0][def.to.key]));
 }
 

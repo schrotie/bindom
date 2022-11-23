@@ -1,3 +1,6 @@
+# 0.0.14
+* bugfix don't propagate non-prexisting props created by adding event-handler
+* BREAKING: don't propagate pre-existing if object already has that property
 # 0.0.13
 * bugfix: correctly bind bind-dom as top-level node in template
 * added db-monster rendering performance demo
