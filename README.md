@@ -134,6 +134,29 @@ dozen or so hoops.
 For production you absolutely want to have a build step that bundles your app. I
 recommend rollup for this. It's the perfect tool for this task.
 
+
+### Methods & Events
+
+Bindom adds two methods to Quary:
+```JavaScript
+const bindToThisObject = {};
+$(document.getElementById('bindThisElement'))
+	.bind(bindToThisObject)
+	.unbind(bindToThisObject);
+```
+`bindToThisObject` is optional in both call. 
+
+`bind` will scan `bindThisElement` and its decendants for `data-bind` attributes
+and bind accordingly (see below). If no argument is passed, it will bind to a
+default `{}` object. When done, it will emit a `bound` event on
+`bindThisElement`. The event will contain the bound `bindToThisObject` as
+`detail`.
+
+`unbind` will revert the binding. If no argument is passed, it will remove
+_all_ bindings, otherwise only those to the passed object. _Before_ unbinding
+it will emit a `beforeUnbind` event on `bindThisElement`. When done unbinding it
+will emit an `removedBound` event on `bindThisElement`.
+
 ### data-bind
 
 
@@ -332,6 +355,13 @@ addClass(class MyDomHandler {});
 ```
 Bindom will call the constructor of your class without arguments and bind it to
 the DOM inside (and including) the `<bind-dom>` element.
+
+`<bind-dom>` will add the bound class instance as property `proxy` to the bound
+`<bind-dom>` element.
+
+Note that you can use bindom's lifecycle events as lifecycle callbacks in your
+class. Just subribe to the host node's `bound` and `beforeUndbind` events,
+preferably using `bindHost` (see below).
 
 #### template
 

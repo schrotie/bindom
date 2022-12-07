@@ -11,6 +11,7 @@ export default function removeNodes(
 	const bound = selectBound(mutated);
 	const rmMap = parse(rootNodes, bound, {});
 	findRmPoints(object, map, rmMap);
+	rootNodes.emit('beforeUnbind');
 	if(forgetScope) bound.forEach(el => removeId(el, scopeId, 'bound'));
 	else            bound.forEach(el =>   moveId(el, scopeId, 'bound', 'bind'));
 	rootNodes.emit('removedBound', {bubbles: true});

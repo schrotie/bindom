@@ -1,3 +1,7 @@
+# 0.0.15
+* bugfix: clean up bindHost when unbinding in bind-dom
+* added beforeUnbind lifecycle event
+* updated docs
 # 0.0.14
 * bugfix don't propagate non-prexisting props created by adding event-handler
 * BREAKING: don't propagate pre-existing if object already has that property
