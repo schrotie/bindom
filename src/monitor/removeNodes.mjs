@@ -56,6 +56,7 @@ function removeEventListener({node, eventListener: {evt, handler} = {}}) {
 
 function convertToSimple(object, map, key, path, def) {
 	removeEventListener(def[0]);
+	if(def[0].to.type === 'event') return updateProperty(object, map, path);
 	const hasPreValue = key in object;
 	const preValue = object[key];
 	updateProperty(object, map, path);

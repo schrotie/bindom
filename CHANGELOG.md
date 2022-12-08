@@ -1,3 +1,5 @@
+# 0.0.16
+* bugfix: exception when converting array binding to simple and reverting value
 # 0.0.15
 * bugfix: clean up bindHost when unbinding in bind-dom
 * added beforeUnbind lifecycle event
