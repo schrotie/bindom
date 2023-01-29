@@ -9,20 +9,24 @@ export default function parse(root, nodes, object, options) {
 function parseBoundNode(root, {noRoot} = {}) {return function(bound) {
 	const parser = noRoot ? (b => parseSingleBinding(false, sq(bound), b)) :
 		(b => parseSingleBinding(root.includes(bound), sq(bound), b));
-	return bound.dataset.bind
-		.replace(/\s+/g, ';')
-		.replace(/(?:^;)|(?:;$)/g, '')
-		.split(';')
-		.filter(b => b)
+	return splitBindings(bound)
 		.map(parser)
 		.filter(b => b);
 };}
 
+function splitBindings(bound) {
+	return bound.dataset.bind
+		.replace(/\s+/g, ';')
+		.replace(/(?:^;)|(?:;$)/g, '')
+		.split(';')
+		.filter(b => b);
+}
+
+
 function sq(node) {return node.shadowRoot ? $(node, ':host') : $(node);}
 
 function parseSingleBinding(isRoot, node, binding) {
-	const splitChar = /÷/.test(binding) ? '÷' : ':';
-	const bind = binding.split(splitChar);
+	const bind = binding.split(':');
 	validateSingleBinding(bind);
 	const key = parseKey(isRoot, node, bind[0]);
 	if(!key) return;
@@ -31,8 +35,7 @@ function parseSingleBinding(isRoot, node, binding) {
 
 function validateSingleBinding(bind) {
 	if(bind.length !== 2) {throw new Error(
-		`Invalid binding "${bind.join(':')}"; expecting "key:domBindExpression" \
-or "key÷domBindExpression"`,
+		`Invalid binding "${bind.join(':')}"; expecting "key:domBindExpression"`,
 	);}
 }
 

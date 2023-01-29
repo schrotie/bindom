@@ -6,6 +6,7 @@ const dom = `<span>
 	<span data-bind=prop:.innerHTML        ><p>html</p></span>
 	<span data-bind=evnt:!click            ></span>
 	<span data-bind=func:addEventListener()></span>
+	<span data-bind=node:*                 ></span>
 </span>`;
 
 describe('shallow proxy', () => {
@@ -15,6 +16,7 @@ describe('shallow proxy', () => {
 	let $prop;
 	let $evnt;
 	let $func;
+	let $node;
 	beforeEach(() => {
 		document.getElementById('test').innerHTML = dom;
 		proxy = $(document, '#test > span').bind();
@@ -23,6 +25,7 @@ describe('shallow proxy', () => {
 		$prop = $(document, '#test > span > span:nth-child(3)');
 		$evnt = $(document, '#test > span > span:nth-child(4)');
 		$func = $(document, '#test > span > span:nth-child(5)');
+		$node = $(document, '#test > span > span:nth-child(6)');
 	});
 
 	it('binds initial text', () => proxy.text.should.equal(' '));
@@ -89,6 +92,15 @@ describe('shallow proxy', () => {
 	it('cannot assign to function', () => {
 		(() => proxy.func = 0).should.throw(
 			'Cannot assign to bound function "addEventListener" with key "func"',
+		);
+	});
+
+
+	it('gets node', () => proxy.node[0].should.equal($node[0]));
+
+	it('cannot assign to node', () => {
+		(() => proxy.node = 0).should.throw(
+			'Cannot assign to bound node with key "node"',
 		);
 	});
 });

@@ -7,8 +7,8 @@ export async function dataClassAttributeChangedCallback(
 	if((name !== 'data-class') || !newValue) return;
 	const opt = await getClass(newValue);
 	const $node = $(this); // eslint-disable-line
-	iniDom($node, oldValue, newValue, opt);
 	if(oldValue) await cleanUpOldHostBinding($node, oldValue);
+	iniDom($node, oldValue, newValue, opt);
 	ini($node, opt, oldValue);
 }
 
@@ -20,7 +20,6 @@ function iniDom($node, oldClass, newClass, {bindHost, style, template}) {
 	if(template) append($node, template);
 	if(!bindHost) return;
 	const attr = $node.attr('data-bind');
-	if(attr && (attr.indexOf(bindHost) !== -1)) return;
 	$node.attr('data-bind', attr ? `${attr};${bindHost}` : bindHost);
 }
 

@@ -32,6 +32,8 @@ function revertObj(def, obj, prop) {
 	try {preValue = Object.prototype.hasOwnProperty.call(obj, prop) ?
 		[obj[prop]] : undefined;} catch(e) {}
 	delete obj[prop];
+	// TODO next line unreachable? This may be a bug ...
+	// revertProp is in the removed def when unbinding / removing nodes
 	if(def.revertProp) obj.defineProperty(prop, def.revertProp);
 	return preValue;
 }
@@ -87,7 +89,7 @@ function getSetter(object, key, def) {
 function propagateToBound(object, key, set, value) {return function(evt) {
 	for(const {obj, prop} of path(object, key)) {
 		if((obj === object) && (prop === key[0])) set.call(object, value(evt));
-		else obj[prop] = value(evt);
+		else obj[prop] = value(evt); // TODO unreachable?
 	}
 };}
 
@@ -160,7 +162,7 @@ function textAccessor(object, def) {
 
 function* path(object, path) {
 	for(const segment of path.slice(0, -1)) {
-		if(!(object = object[segment])) return;
+		if(!(object = object[segment])) return; // TODO unreachable?
 	}
 	yield {obj: object, prop: path.at(-1)};
 }

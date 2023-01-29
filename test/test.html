@@ -14,41 +14,33 @@
 	<div id="mocha"></div>
 	<div id="test"></div>
 	<script type="module">
+		import chromeCoverage from '../node_modules/chrome-coverage/chrome-coverage.min.mjs';
 
-mocha.setup('bdd');
-chai.should();
+		mocha.setup('bdd');
+		chai.should();
 
-describeCoverageTest();
-((window.puppeteerStartCoverage && puppeteerStartCoverage()) || Promise.resolve())
-.then(listTests)
-.then(importTests)
-.then(() => {
-	mocha.checkLeaks();
-	mocha.run();
-});
+		(async function() {
+			if(window.puppeteerStartCoverage) await window.puppeteerStartCoverage();
+			await loadTests();
+			chromeCoverage({getCoverage});
+			mocha.checkLeaks();
+			mocha.run();
+		})();
 
-function listTests() {return fetch('/test').then(res => res.text());}
+		async function loadTests() {
+			const directoryResponse = await fetch('/test')
+			const directoryText     = await directoryResponse.text();
+			const testScripts       = directoryText.match(/([\w-]+)\.mjs/g);
+			return Promise.all(testScripts.map(file => import(`./${file}`)));
+		}
 
-function importTests(text) {return Promise.all(
-	text.match(/([\w-]+)\.mjs/g).map(file => import(`./${file}`))
-);}
-
-function describeCoverageTest() {
-	if(!window.puppeteerStartCoverage) return;
-	after(done => {
-		puppeteerStopCoverage()
-		.then(coverage => {
-			const sq = /bindom\.mjs/;
-			coverage = coverage.js.filter(el => sq.test(el.url))[0];
-			let totalBytes = coverage.text.length, usedBytes = 0;
-			for(let range of coverage.ranges) usedBytes += range.end - range.start - 1;
-			coverage = usedBytes / totalBytes;
-			try{coverage.should.be.above(0.99);}
-			catch(e) {done(); throw new Error(`Insufficient coverage: ${coverage}`);}
-			done();
-		});
-	});
-}
+		function getCoverage() {
+			if(window.puppeteerStopCoverage) {
+				return window.puppeteerStopCoverage({jsPath: 'jsCoverage.json'})
+					.then(({js}) => js);
+			}
+			else return fetch('../jsCoverage.json').then(res => res.text());
+		}
 
 	</script>
 </body>

@@ -38,17 +38,19 @@
 	"browser": "bindom.mjs",
 	"exports": "./bindom.mjs",
 	"devDependencies": {
+		"@rollup/plugin-node-resolve": "latest",
 		"browser-sync": "latest",
 		"chai": "latest",
+		"chrome-coverage": "latest",
 		"eslint": "^8.4.1",
 		"eslint-config-google": "^0.7.1",
 		"eslint-plugin-html": "^1.7.0",
 		"jsdoc": "latest",
 		"jsdoc-to-markdown": "^4.0.1",
 		"mocha": "latest",
+		"mocha-headless-chrome": "git://github.com/schrotie/mocha-headless-chrome.git",
 		"rollup": "latest",
-		"rollup-plugin-terser": "latest",
-		"@rollup/plugin-node-resolve": "latest"
+		"rollup-plugin-terser": "latest"
 	},
 	"dependencies": {
 		"quary": "latest"
@@ -61,6 +63,7 @@
 		"prepare": "npm run build",
 		"start": "browser-sync start --server --index demo/app/index.html --files \"demo/app/**\"",
 		"stop": "ps aux | grep 'bindom/node_modules/.bin/browser-sync' | grep -v grep | awk '{print $2}' | xargs kill",
-		"test": "node test.js"
+		"test": "node test.js",
+		"test:headless": "node test.js --headless"
 	}
 }

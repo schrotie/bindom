@@ -453,6 +453,79 @@ applicable), `Object.assign(newInstance, arrayObject)` and then bind
 
 `loop-dom` also supports `data-parent` and `data-insert` attributes.
 
+#### `data-chunks`
+
+`loop-dom` supports the `data-chunks` attribute to perform chunked rendering.
+
+You _should_ aim to render only what the user is currently seeing and then you
+will almost never experience performance problems when rendering. However, if
+you render big arrays or very complex DOM, you _may_ use chunked rendering.
+That way the browser won't freeze while rendering.
+
+You may for example set `data-chunks=10` and `loop-dom` will render 10 array
+elements, exit the current function-stack, render the next 10 elements later
+and so on.
+
+#### `data-update`
+
+`loop-dom` supports the `data-update` attribute with which the update-strategy
+may be performance-optimized. It should very rarely be necessary to use this.
+
+Five update strategies are available:
+* `rebind` is the default
+* `always`
+* `unidentical`
+* `unidentical,rebind`
+* `unidentical,always`
+
+When the default update strategy `rebind` is executed, the following steps
+happen, whenever you set the `array` property of a `loop-dom` `template`
+element:
+1. If you did not provide `data-class`, that is set to `Object`
+2. DOM elements are added or removed to fit the array size
+3. DOM elements are updated with the elements of the array
+
+In step 3. the update strategy is applied. `rebind` means
+1. Convert the array element to the correct (`data-class`) class if it has
+another class.
+2. Unbind the DOM from the previously bound object.
+3. Bind the DOM to the new object (array element).
+4. If a new object was created in step one, `Object.assign` the original
+array element to the new object.
+5. Set the `class` attribute if `data-class` is not `Object`.
+
+Thus `rebind` is a clean slate strategy. The DOM is reused (this is essential,
+or otherwise scroll-positions would jump when re-rendering), but everything
+else is re-initialized as if it were the first rendering.
+
+Update strategy `always` will skip the rebind steps if the array element's
+class is correct. But it will always `Object.assign` the array element to the
+bound object, even if the array element is the identical instance (`===`) as the
+bound object.
+
+You can skip this latter step for identical objects by setting update strategy
+`unidentical`.
+
+Note that for update strategies `always` and `unidentical` you class must be
+able to handle the respective updates correctly! You _must not_ rely on code in
+the constructor or e.g. a callback on the `bound` event in order to cleanly
+initialize when new data is set. Since you _may_ need to write your class in a
+special way, the default update strategy is the rather inefficient `rebind`.
+
+The `unidentical` keyword also tells `loop-dom` to ignore when its `array`
+property is set to the same array-instance as before. So if you change an
+array e.g. with its splice method and set it to `loop-dom` then your update
+will be ignored! This may be useful in some edgecases when the identical
+array is set twice, but usually setting the same array twice is a bug!
+
+So if your update strategy is `unidentical*` then always set a (possibly
+shallow) copy of your array, so that updates get applied. If you have update
+strategy `unidentical,rebind` the updatestrategy then becomes `rebind`,
+accordingly for `unidentical,always` it becomes `always` or remains
+`unidentical` for `unidentical`.
+
+
+
 ### Custom Elements
 
 Bindom is intended to help with code organization, facilitate separation of

@@ -1,17 +1,28 @@
 import $ from '../bindom.mjs';
 
-import {addClass} from '../src/classRegistry.mjs';
+import {addClass, deleteClassForTest} from '../src/classRegistry.mjs';
 
 const dom = /* html */`<bind-dom data-class=test></bind-dom>`;
 const style = /* css */`bind-dom[data-class="test"] {display: block;}`;
 const template = /* html */`<input data-bind=value:.value>`;
 
-addClass(class test {set value(v) {this._value = v;}}, {style, template});
 
 describe('bind-dom', () => {
 	let proxy;
 	let $sqBind;
 	let $input;
+
+	class test {set value(v) {this._value = v;}}
+	class testA {}
+	class testHostBinding {}
+	class testHostBinding2 {}
+	before(function() {
+		addClass(test, {style, template});
+		addClass(testA);
+		addClass(testHostBinding,  {bindHost: 'a:.a'});
+		addClass(testHostBinding2, {bindHost: 'a:.a'});
+	});
+
 	beforeEach(async() => {
 		document.getElementById('test').innerHTML = dom;
 		$sqBind = $(document, '#test > bind-dom');
@@ -21,6 +32,10 @@ describe('bind-dom', () => {
 	});
 
 	after(() => {
+		deleteClassForTest(test);
+		deleteClassForTest(testA);
+		deleteClassForTest(testHostBinding);
+		deleteClassForTest(testHostBinding2);
 		document.getElementById('test').innerHTML = '';
 		$(document.head).query('style').call('remove');
 	});
@@ -36,9 +51,61 @@ describe('bind-dom', () => {
 		$(document.head).query('style').prop('innerHTML').should.equal(style);
 	});
 
+	it('adds className', () => $sqBind.attr('class').should.equal('test'));
+
+	it('ignores same className', () => $sqBind.attr('data-class', false));
+
+	it('adds className', async function() {
+		$sqBind.attr('data-class', 'testA');
+		await $sqBind.when('bound');
+		$sqBind.attr('class').should.equal('testA');
+	});
+
+	it('add and removes hostBinding', async function() {
+		document.getElementById('test').innerHTML = /* html */`
+			<bind-dom data-class=testHostBinding></bind-dom>
+		`;
+		$sqBind = $(document, '#test > bind-dom');
+		await $sqBind.when('bound');
+		$sqBind.attr('data-bind').should.equal('a:.a');
+		$sqBind.attr('data-class', 'testA');
+		await $sqBind.when('bound');
+		$sqBind.attr('data-bind').should.equal('');
+	});
+
+	it('reuses hostBinding', async function() {
+		document.getElementById('test').innerHTML = /* html */`
+			<bind-dom data-class=testHostBinding></bind-dom>
+		`;
+		$sqBind = $(document, '#test > bind-dom');
+		await $sqBind.when('bound');
+		$sqBind.attr('data-bind').should.equal('a:.a');
+		$sqBind.attr('data-class', 'testHostBinding2');
+		await $sqBind.when('bound');
+		$sqBind.attr('data-bind').should.equal('a:.a');
+	});
+
+
+	it('preserves parent binding', async function() {
+		document.getElementById('test').innerHTML = /* html */`
+			<bind-dom data-class=testHostBinding data-bind=^a:.a></bind-dom>
+		`;
+		$sqBind = $(document, '#test > bind-dom');
+		await $sqBind.when('bound');
+		$sqBind.attr('data-bind').should.equal('^a:.a;a:.a');
+	});
+
+	it('preserves children', async function() {
+		document.getElementById('test').innerHTML = /* html */`
+		<bind-dom data-class=test data-bind=^a:.a><a></a></bind-dom>
+		`;
+		$sqBind = $(document, '#test > bind-dom');
+		await $sqBind.when('bound');
+		$sqBind.query('a').length.should.equal(1);
+	});
+
 	it('updates deep bindings', async() => {
 		let tC = false;
-		addClass(class testA {});
 		addClass(class testB {set testC(t) {tC = t;}});
 		document.getElementById('test').innerHTML = /* html */`
 			<bind-dom       data-class=testA>
@@ -127,13 +194,11 @@ describe('bind-dom', () => {
 		`;
 		const $bindom = $(document, '#test > bind-dom');
 		await $bindom.when('bound');
-		console.log('loop in if pre', $bindom.prop('innerText'));
 		$bindom.prop('proxy', {render: true, array: [{text: 'test'}]});
 		const $if = $(document, '#test > bind-dom > template[is="if-dom"]');
 		await $if.when('inserted');
 		const $loop = $(document, '#test > bind-dom > template[is="loop-dom"]');
 		await $loop.when('inserted');
-		console.log('loop in if', $bindom.prop('innerText'));
 		$bindom.prop('innerText').should.equal('test');
 	});
 

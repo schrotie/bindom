@@ -48,4 +48,24 @@ describe('bound merging', () => {
 		proxy.bar.foo.baz =  'baz';
 		bound.bar.foo.baz.should.equal('baz');
 	});
+
+	it.skip('should revert bound property', async() => {
+		$(document, '#test')[0].innerHTML = /* html */`<a data-bind=a:.a></a>`;
+		const $dom = $(document, '#test > a');
+		const bound = {set a(s) {this._a = s;}};
+		$dom.bind(bound);
+		$(document, '#test > a').append(/* html */`<a data-bind=a:.a></a>`);
+		await $dom.when('addedBound');
+		bound.a = 42;
+		bound._a.should.equal(42);
+	});
+
+	it('write event to object', async() => {
+		$(document, '#test')[0].innerHTML = /* html */`<a data-bind=a:!a></a>`;
+		const $dom = $(document, '#test > a');
+		const bound = {};
+		$dom.bind(bound);
+		$dom.emit('a');
+		await new Promise(resolve => setTimeout(resolve));
+	});
 });

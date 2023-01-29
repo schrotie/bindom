@@ -3,6 +3,7 @@ export default function selectBound(nodes) {
 	return nodes.query('[data-bind]').filter(el => {
 		for(const s of scoped) {
 			if(parentBinding(s, el)) return true;
+			if(s ===      el)  return false;
 			if(s.contains(el)) return false;
 		}
 		return true;
